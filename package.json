@@ -1,0 +1,41 @@
+{
+  "name": "opcoin",
+  "version": "1.0.0",
+  "description": "OpCoin Grabber",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "protocols": [
+    {
+      "name": "opcoin",
+      "schemes": [
+        "opcoin"
+      ]
+    }
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^14.0.1",
+    "electron-builder": "^22.11.7"
+  },
+  "build": {
+    "appId": "com.aryaanish.opcoin",
+    "productName": "Op Coin",
+    "target": "NSIS",
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    },
+    "win": {
+      "icon": "build/icon.ico"
+    }
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  }
+}

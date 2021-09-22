@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Op coin</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="main">
+      <button class="kave-btn">
+        <span class="kave-line"></span>
+        <span class="grab-text">Start Grabber</span>
+      </button>
+      <div class="private-key">
+        <input type="password" name="private-key" placeholder="private key" />
+        <button>&rarr;</button>
+      </div>
+      <div class="result">
+        <p>✔ coin rewarded</p>
+      </div>
+    </div>
+    <script>
+      const button = document.querySelector('.kave-btn');
+      let mining = false;
+
+      const mine = async () => {
+        if (mining) {
+          const res = await fetch('https://OpCoin.aryaanish.repl.co/grab', {
+            method: 'POST',
+            body: JSON.stringify({
+              privateKey: localStorage.getItem('PRIVATE_KEY'),
+            }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const data = await res.json();
+          if (data.message === 'Private key not found') {
+            mining = false;
+            document.querySelector('.grab-text').innerHTML = `Start Grabber`;
+
+            document.querySelector(
+              '.result'
+            ).innerHTML = `<p>${data.message}. <span class="reenter">Click here to re enter the private key</span></p>`;
+
+            document
+              .querySelector('.result')
+              .classList.add('showInitial', 'redBack');
+            document.querySelector('.result').classList.remove('.greenBack');
+            document.querySelector('.reenter').addEventListener('click', () => {
+              document.querySelector('.private-key').classList.add('show');
+              document
+                .querySelector('.result')
+                .classList.remove('showInitial', 'redBack');
+            });
+          } else if (res.status === 200) {
+            document.querySelector(
+              '.result'
+            ).innerHTML = `<p>${data.message}. Trying again in 5 minutes</p>`;
+            document
+              .querySelector('.result')
+              .classList.add('showInitial', 'greenBack');
+            document.querySelector('.result').classList.remove('redBack');
+          } else {
+            document.querySelector(
+              '.result'
+            ).innerHTML = `<p>${data.message}. Trying again in 5 minutes</p>`;
+            document
+              .querySelector('.result')
+              .classList.add('showInitial', 'redBack');
+            document.querySelector('.result').classList.remove('greenBack');
+          }
+        }
+      };
+
+      document
+        .querySelector('.private-key button')
+        .addEventListener('click', () => {
+          const privatekey = document.querySelector('.private-key input');
+          localStorage.setItem('PRIVATE_KEY', privatekey.value);
+          document.querySelector('.private-key').classList.remove('show');
+          privatekey.value = '';
+        });
+
+      button.addEventListener('click', () => {
+        if (mining == true) {
+          mining = false;
+          document
+            .querySelector('.result')
+            .classList.remove('showInitial', 'redBack', 'greenBack');
+          document.querySelector('.grab-text').innerHTML = `Start Grabber`;
+        } else {
+          if (localStorage.getItem('PRIVATE_KEY')) {
+            mining = true;
+            document.querySelector('.grab-text').innerHTML = `Stop Grabber`;
+            mine();
+          } else {
+            document.querySelector('.private-key').classList.add('show');
+          }
+        }
+      });
+
+      setInterval(mine, 300000);
+    </script>
+  </body>
+</html>
